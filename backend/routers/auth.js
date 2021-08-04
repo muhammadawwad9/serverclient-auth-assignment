@@ -20,7 +20,6 @@ router.post("/register", async (req, res) => {
     /*I will use the id of the saved user in the DB in order to put it inside the token and also inside the req object so I will have it for future requests  (as long as the user logged in) :)*/
     const id = savedUser._id;
     const token = tokenGenerator({ id });
-    console.log("GOT TOKEN: ", token);
     return res.json({ msg: "welcome", token });
   } catch (err) {
     console.log("ERROR: ", err);
