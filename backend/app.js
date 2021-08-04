@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 4000;
 const MONGOURI = process.env.MONGOURI;
 //models imports
 const authRouter = require("./routers/auth");
+const userRouter = require("./routers/user");
 app.use(cors());
 app.use(express.json());
 
@@ -29,5 +30,6 @@ app.get("/", async (req, res) => {
 
 //login and register routes will go into this router
 app.use(authRouter);
+app.use(userRouter);
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

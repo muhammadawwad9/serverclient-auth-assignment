@@ -30,12 +30,14 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     let { username, password } = req.body;
+    if (!username.trim() || !password)
+      return res.status(400).json({ err: "missing fields" });
     const foundUsername = await User.findOne({ username });
     if (!foundUsername)
-      return res.status(403).json({ err: "wrong username or password" }); //I say that something wrong(without specifications) for more security :)
+      return res.status(401).json({ err: "wrong username or password" }); //I say that something wrong(without specifications) for more security :)
     const correct = await bcrypt.compare(password, foundUsername.password);
     if (!correct)
-      return res.status(403).json({ err: "wrong username or password" });
+      return res.status(401).json({ err: "wrong username or password" });
     const id = foundUsername._id;
     const token = tokenGenerator({ id });
     return res.json({ msg: "welcome", token });
