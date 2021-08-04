@@ -6,7 +6,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const requireLogin = async (req, res, next) => {
   const { authorization } = req.headers;
-  //authorization === Bearer askjhbfsajhkfbcsadjhkcbsadjhk
   if (!authorization) {
     return res.status(403).json({ error: "you must be logged in" });
   }
