@@ -31,13 +31,18 @@ const styles = {
   loginLink: {
     color: "#ab47bc",
   },
-  loadingGif: {
+  bigLoader: {
     width: "200px",
     height: "200px",
     position: "fixed",
     left: "50%",
     top: "50%",
     transform: "translate(-50%,-50%)",
+  },
+  serverLoader: {
+    width: "75px",
+    height: "75px",
+    paddingLeft: "20px",
   },
   cardCategoryWhite: {
     color: "rgba(255,255,255,.62)",
@@ -70,18 +75,19 @@ const Register = ({ history }) => {
   const [country, setCountry] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [about, setAbout] = useState("");
-  const [checkingToken, setCheckToken] = useState(true);
-
+  const [checkingToken, setCheckingToken] = useState(true);
+  const [serverWait, setServerWait] = useState(false);
+  /*I don't want to show multiply toasts when clicking enter so fast several times! so I will allow another toast after 5s*/
+  const [toastFinished, setToastFinished] = useState(true);
   const dispatch = useDispatch();
-
   //capitalizeStr
   const capitalizeStr = (str) => {
     return str[0].toUpperCase() + str.toLowerCase().slice(1);
   };
   //submitHandler()
-  const submitHandler = async (e) => {
-    e.preventDefault();
-
+  const submitHandler = async () => {
+    setToastFinished(false);
+    setServerWait(true);
     try {
       const userInfo = {
         username,
@@ -106,16 +112,27 @@ const Register = ({ history }) => {
         body: JSON.stringify(userInfo),
       });
       const parsedResponse = await response.json();
-      if (parsedResponse.err)
-        return toast.error(parsedResponse.err, {
+      setServerWait(false);
+      if (parsedResponse.err) {
+        toast.error(parsedResponse.err, {
           position: toast.POSITION.BOTTOM_CENTER,
         });
+        setTimeout(() => {
+          setToastFinished(true);
+        }, 3500);
+        return;
+      }
+
       const { token } = parsedResponse;
       localStorage.setItem("token", token);
       dispatch({ type: "USER_DATA", payload: parsedResponse.data });
       history.push("/");
       toast.success(parsedResponse.msg);
+      setTimeout(() => {
+        setToastFinished(true);
+      }, 3500);
     } catch (err) {
+      setToastFinished(true);
       return toast.error(err, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
@@ -130,14 +147,14 @@ const Register = ({ history }) => {
       if (valid) {
         dispatch({ type: "USER_DATA", payload: data });
         history.push("/");
-      } else setCheckToken(false);
+      } else setCheckingToken(false);
     })();
   }, []);
 
   return (
     <div className={classes.registerPage}>
       {checkingToken ? (
-        <img src="loading.gif" className={classes.loadingGif} />
+        <img src="loading.gif" className={classes.bigLoader} />
       ) : (
         <GridContainer justify="center">
           <GridItem xs={12} sm={12} md={8}>
@@ -148,10 +165,15 @@ const Register = ({ history }) => {
                   Fill Up Your Details Below
                 </p>
               </CardHeader>
-              <form onSubmit={(e) => submitHandler(e)}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (toastFinished) submitHandler();
+                }}
+              >
                 <CardBody>
                   <GridContainer>
-                    <GridItem xs={12} sm={12} md={5}>
+                    <GridItem xs={12} sm={12} md={4}>
                       <CustomInput
                         labelText="Company (disabled)"
                         id="company-disabled"
@@ -163,11 +185,10 @@ const Register = ({ history }) => {
                         }}
                       />
                     </GridItem>
-                    <GridItem xs={12} sm={12} md={3}>
+                    <GridItem xs={12} sm={12} md={4}>
                       <CustomInput
                         labelText="Username"
                         id="username"
-                        onChange={() => console.log("hello")}
                         formControlProps={{
                           fullWidth: true,
                         }}
@@ -295,8 +316,19 @@ const Register = ({ history }) => {
                     </GridItem>
                   </GridContainer>
                 </CardBody>
+                {serverWait ? (
+                  <img
+                    src="loading-dots.gif"
+                    className={classes.serverLoader}
+                  />
+                ) : null}
+
                 <CardFooter>
-                  <Button color="primary" type="submit">
+                  <Button
+                    color="primary"
+                    type="submit"
+                    disabled={!toastFinished}
+                  >
                     Register
                   </Button>
                 </CardFooter>

@@ -21,6 +21,11 @@ import avatar from "assets/img/faces/marc.jpg";
 import { useSelector, useDispatch } from "react-redux";
 
 const styles = {
+  serverLoader: {
+    width: "75px",
+    height: "75px",
+    paddingLeft: "20px",
+  },
   cardCategoryWhite: {
     color: "rgba(255,255,255,.62)",
     margin: "0",
@@ -43,22 +48,38 @@ const useStyles = makeStyles(styles);
 
 export default function UserProfile() {
   const classes = useStyles();
-  const globalState = useSelector((state) => state);
+
+  const dispatch = useDispatch();
+  /*I want to retrieve the current user info from the global state so the user can have placeholder values for the current info before updating. I will use the curent information as the default values inside the defaultFields state below*/
+  const {
+    username,
+    firstName,
+    lastName,
+    email,
+    city,
+    country,
+    postalCode,
+    about,
+    loading,
+  } = useSelector((state) => state);
 
   const [defaultFields, setDefaultFields] = useState({
-    username: globalState.username,
-    firstName: globalState.firstName,
-    lastName: globalState.lastName,
-    email: globalState.email,
-    city: globalState.city,
-    country: globalState.country,
-    postalCode: globalState.postalCode,
-    about: globalState.about,
+    username: username,
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    city: city,
+    country: country,
+    postalCode: postalCode,
+    about: about,
   });
+  const [toastFinished, setToastFinished] = useState(true);
 
   //updateHandler
-  const updateHandler = async (e) => {
-    e.preventDefault();
+  const updateHandler = async () => {
+    setToastFinished(false);
+
+    dispatch({ type: "LOADING", payload: true });
     try {
       const response = await fetch("http://localhost:4000/update-profile", {
         method: "put",
@@ -69,13 +90,22 @@ export default function UserProfile() {
         body: JSON.stringify(defaultFields),
       });
       const parsedResponse = await response.json();
+      dispatch({ type: "LOADING", payload: false });
+
       if (parsedResponse.updatedUser) {
         toast.success(parsedResponse.msg);
-      } else
+        setTimeout(() => setToastFinished(true), 3500);
+      } else {
         toast.error("Something Went Wrong!", {
           position: toast.POSITION.BOTTOM_CENTER,
         });
+        setTimeout(() => setToastFinished(true), 3500);
+
+        return;
+      }
     } catch (err) {
+      setToastFinished(true);
+
       alert("something went wrong!");
     }
   };
@@ -89,7 +119,12 @@ export default function UserProfile() {
               <h4 className={classes.cardTitleWhite}>Edit Profile</h4>
               <p className={classes.cardCategoryWhite}>Complete your profile</p>
             </CardHeader>
-            <form onSubmit={(e) => updateHandler(e)}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (toastFinished) updateHandler();
+              }}
+            >
               <CardBody>
                 <GridContainer>
                   <GridItem xs={12} sm={12} md={5}>
@@ -253,8 +288,11 @@ export default function UserProfile() {
                   </GridItem>
                 </GridContainer>
               </CardBody>
+              {loading ? (
+                <img src="/loading-dots.gif" className={classes.serverLoader} />
+              ) : null}
               <CardFooter>
-                <Button color="primary" type="submit">
+                <Button color="primary" type="submit" disabled={!toastFinished}>
                   Update Profile
                 </Button>
               </CardFooter>

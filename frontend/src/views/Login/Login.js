@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 import { toast } from "react-toastify";
@@ -32,13 +32,18 @@ const styles = {
   registerLink: {
     color: "#ab47bc",
   },
-  loadingGif: {
+  bigLoader: {
     width: "200px",
     height: "200px",
     position: "fixed",
     left: "50%",
     top: "50%",
     transform: "translate(-50%,-50%)",
+  },
+  serverLoader: {
+    width: "75px",
+    height: "75px",
+    paddingLeft: "20px",
   },
   cardCategoryWhite: {
     color: "rgba(255,255,255,.62)",
@@ -64,16 +69,20 @@ const Login = ({ history }) => {
   const classes = useStyles();
 
   const [userInfo, setUserInfo] = useState({});
-  const [checkingToken, setCheckToken] = useState(true);
+  /*loading states go below, (when the user is logged in there will be loading inside the global state, so every loading action inside the website will be depends on that loading)*/
+  const [serverWait, setServerWait] = useState(false);
+  const [checkingToken, setCheckingToken] = useState(true);
+  const [toastFinished, setToastFinished] = useState(true);
   const dispatch = useDispatch();
-
+  const globalState = useSelector((state) => state);
   /*changeHandler, when the username or password input changes I will set the userInfo state which is the object to send to the server*/
   const changeHandler = (e) => {
     setUserInfo({ ...userInfo, [e.target.id]: e.target.value });
   };
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  const submitHandler = async () => {
+    setServerWait(true);
+    setToastFinished(false);
     try {
       const response = await fetch("http://localhost:4000/login", {
         method: "post",
@@ -81,14 +90,26 @@ const Login = ({ history }) => {
         body: JSON.stringify(userInfo),
       });
       const parsedResponse = await response.json();
-      if (parsedResponse.err)
-        return toast.error(parsedResponse.err, {
+      setServerWait(false);
+
+      if (parsedResponse.err) {
+        toast.error(parsedResponse.err, {
           position: toast.POSITION.BOTTOM_CENTER,
         });
+        setTimeout(() => {
+          setToastFinished(true);
+        }, 3500);
+        return;
+      }
+
       const { token } = parsedResponse;
       localStorage.setItem("token", token);
       dispatch({ type: "USER_DATA", payload: parsedResponse.data });
+
       toast.success(parsedResponse.msg);
+      setTimeout(() => {
+        setToastFinished(true);
+      }, 3500);
       history.push("/");
     } catch (err) {
       toast.error(err, {
@@ -107,7 +128,7 @@ const Login = ({ history }) => {
         history.push("/");
       } else {
         dispatch({ type: "CLEAR" });
-        setCheckToken(false);
+        setCheckingToken(false);
       }
     })();
   }, []);
@@ -115,7 +136,7 @@ const Login = ({ history }) => {
   return (
     <div className={classes.loginPage}>
       {checkingToken ? (
-        <img src="loading.gif" class={classes.loadingGif} />
+        <img src="loading.gif" class={classes.bigLoader} />
       ) : (
         <GridContainer justify="center">
           <GridItem xs={12} sm={9} md={5}>
@@ -127,7 +148,8 @@ const Login = ({ history }) => {
 
               <form
                 onSubmit={(e) => {
-                  submitHandler(e);
+                  e.preventDefault();
+                  if (toastFinished) submitHandler();
                 }}
               >
                 <CardBody>
@@ -163,8 +185,18 @@ const Login = ({ history }) => {
                     </GridItem>
                   </GridContainer>
                 </CardBody>
+                {serverWait ? (
+                  <img
+                    src="loading-dots.gif"
+                    className={classes.serverLoader}
+                  />
+                ) : null}
                 <CardFooter>
-                  <Button color="primary" type="submit">
+                  <Button
+                    color="primary"
+                    type="submit"
+                    disabled={!toastFinished}
+                  >
                     Login
                   </Button>
                 </CardFooter>

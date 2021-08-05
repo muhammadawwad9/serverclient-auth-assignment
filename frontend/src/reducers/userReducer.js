@@ -5,6 +5,8 @@ const userReducer = (state = initialState, action) => {
       return action.payload;
     case "CLEAR":
       return null;
+    case "LOADING":
+      return { ...state, loading: action.payload };
   }
   return state;
 };
