@@ -15,8 +15,9 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
+import React, { Fragment } from "react";
 import ReactDOM from "react-dom";
+import { useSelector } from "react-redux";
 import { createBrowserHistory } from "history";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
@@ -44,17 +45,34 @@ const store = createStore(
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
-ReactDOM.render(
-  <Provider store={store}>
+/*the hook can be called inside functional component, so I will make the <App/> component here and then put it the render method below*/
+
+const App = () => {
+  const globalState = useSelector((state) => state);
+  console.log("GLOBAL STATEEEEEEE: ", globalState);
+
+  return (
     <Router history={hist}>
       <Switch>
-        <Route path="/admin" component={Admin} />
-        <Route path="/rtl" component={RTL} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
-        <Redirect from="/" to="/admin/dashboard" />
+        {!globalState ? (
+          <Redirect to="/login" />
+        ) : (
+          <Fragment>
+            <Route path="/admin" component={Admin} />
+            <Route path="/rtl" component={RTL} />
+            <Redirect from="/" to="/admin/dashboard" />
+          </Fragment>
+        )}
       </Switch>
     </Router>
+  );
+};
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
   </Provider>,
   document.getElementById("root")
 );
