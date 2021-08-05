@@ -46,7 +46,6 @@ const store = createStore(
 );
 
 /*the hook can be called inside functional component, so I will make the <App/> component here and then put it the render method below*/
-
 const App = () => {
   const globalState = useSelector((state) => state);
   console.log("GLOBAL STATEEEEEEE: ", globalState);

@@ -59,6 +59,7 @@ const styles = {
 };
 
 const useStyles = makeStyles(styles);
+
 const Login = ({ history }) => {
   const classes = useStyles();
 
@@ -80,7 +81,6 @@ const Login = ({ history }) => {
         body: JSON.stringify(userInfo),
       });
       const parsedResponse = await response.json();
-      console.log("GOT: ", parsedResponse);
       if (parsedResponse.err)
         return toast.error(parsedResponse.err, {
           position: toast.POSITION.BOTTOM_CENTER,
@@ -105,7 +105,10 @@ const Login = ({ history }) => {
       if (valid) {
         dispatch({ type: "USER_DATA", payload: data });
         history.push("/");
-      } else setCheckToken(false);
+      } else {
+        dispatch({ type: "CLEAR" });
+        setCheckToken(false);
+      }
     })();
   }, []);
 

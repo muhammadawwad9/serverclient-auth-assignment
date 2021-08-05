@@ -3,7 +3,7 @@ const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case "USER_DATA":
       return action.payload;
-    case "RESET":
+    case "CLEAR":
       return null;
   }
   return state;
