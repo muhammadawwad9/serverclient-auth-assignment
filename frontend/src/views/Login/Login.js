@@ -19,6 +19,9 @@ import CardFooter from "components/Card/CardFooter.js";
 
 // import avatar from "assets/img/faces/marc.jpg";
 
+//importing functions from utils
+import { checkStoredToken } from "../../utils";
+
 const styles = {
   loginPage: {
     padding: "20px 10px",
@@ -28,6 +31,14 @@ const styles = {
   },
   registerLink: {
     color: "#ab47bc",
+  },
+  loadingGif: {
+    width: "200px",
+    height: "200px",
+    position: "fixed",
+    left: "50%",
+    top: "50%",
+    transform: "translate(-50%,-50%)",
   },
   cardCategoryWhite: {
     color: "rgba(255,255,255,.62)",
@@ -52,6 +63,7 @@ const Login = ({ history }) => {
   const classes = useStyles();
 
   const [userInfo, setUserInfo] = useState({});
+  const [checkingToken, setCheckToken] = useState(true);
   const dispatch = useDispatch();
 
   /*changeHandler, when the username or password input changes I will set the userInfo state which is the object to send to the server*/
@@ -85,74 +97,86 @@ const Login = ({ history }) => {
     }
   };
 
+  //I want to check if there is a stored token, if yes I want to make sure it is real!
   useEffect(() => {
-    console.log("changed: ", userInfo);
-  }, [userInfo]);
+    //self invoked function that
+    (async function() {
+      const { valid, data } = await checkStoredToken();
+      if (valid) {
+        dispatch({ type: "USER_DATA", payload: data });
+        history.push("/");
+      } else setCheckToken(false);
+    })();
+  }, []);
 
   return (
     <div className={classes.loginPage}>
-      <GridContainer justify="center">
-        <GridItem xs={12} sm={9} md={5}>
-          <Card>
-            <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Login</h4>
-              <p className={classes.cardCategoryWhite}>Join and Enjoy</p>
-            </CardHeader>
+      {checkingToken ? (
+        <img src="loading.gif" class={classes.loadingGif} />
+      ) : (
+        <GridContainer justify="center">
+          <GridItem xs={12} sm={9} md={5}>
+            <Card>
+              <CardHeader color="primary">
+                <h4 className={classes.cardTitleWhite}>Login</h4>
+                <p className={classes.cardCategoryWhite}>Join and Enjoy</p>
+              </CardHeader>
 
-            <form
-              onSubmit={(e) => {
-                submitHandler(e);
-              }}
-            >
-              <CardBody>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={8}>
-                    <CustomInput
-                      labelText="Username"
-                      id="username"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        onChange: (e) => changeHandler(e),
-                        required: true,
-                      }}
-                    />
-                  </GridItem>
-                </GridContainer>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={8}>
-                    <CustomInput
-                      labelText="Password"
-                      id="password"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        type: "password",
-                        onChange: (e) => changeHandler(e),
-                        required: true,
-                      }}
-                    />
-                  </GridItem>
-                </GridContainer>
-              </CardBody>
-              <CardFooter>
-                <Button color="primary" type="submit">
-                  Login
-                </Button>
-              </CardFooter>
-            </form>
+              <form
+                onSubmit={(e) => {
+                  submitHandler(e);
+                }}
+              >
+                <CardBody>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={8}>
+                      <CustomInput
+                        labelText="Username"
+                        id="username"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          onChange: (e) => changeHandler(e),
+                          required: true,
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={8}>
+                      <CustomInput
+                        labelText="Password"
+                        id="password"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          type: "password",
+                          onChange: (e) => changeHandler(e),
+                          required: true,
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                </CardBody>
+                <CardFooter>
+                  <Button color="primary" type="submit">
+                    Login
+                  </Button>
+                </CardFooter>
+              </form>
 
-            <h4 className={classes.registerAsk}>
-              Don't Have an Account?{" "}
-              <span className={classes.registerLink}>
-                <Link to="/register">Register</Link>
-              </span>
-            </h4>
-          </Card>
-        </GridItem>
-      </GridContainer>
+              <h4 className={classes.registerAsk}>
+                Don't Have an Account?{" "}
+                <span className={classes.registerLink}>
+                  <Link to="/register">Register</Link>
+                </span>
+              </h4>
+            </Card>
+          </GridItem>
+        </GridContainer>
+      )}
     </div>
   );
 };

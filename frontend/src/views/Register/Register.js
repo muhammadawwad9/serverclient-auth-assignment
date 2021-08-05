@@ -18,6 +18,9 @@ import CardFooter from "components/Card/CardFooter.js";
 
 // import avatar from "assets/img/faces/marc.jpg";
 
+//importing functions from utils
+import { checkStoredToken } from "../../utils";
+
 const styles = {
   registerPage: {
     padding: "20px 10px",
@@ -27,6 +30,14 @@ const styles = {
   },
   loginLink: {
     color: "#ab47bc",
+  },
+  loadingGif: {
+    width: "200px",
+    height: "200px",
+    position: "fixed",
+    left: "50%",
+    top: "50%",
+    transform: "translate(-50%,-50%)",
   },
   cardCategoryWhite: {
     color: "rgba(255,255,255,.62)",
@@ -59,6 +70,7 @@ const Register = ({ history }) => {
   const [country, setCountry] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [about, setAbout] = useState("");
+  const [checkingToken, setCheckToken] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -110,179 +122,195 @@ const Register = ({ history }) => {
     }
   };
 
+  //I want to check if there is a stored token, if yes I want to make sure it is real!
+  useEffect(() => {
+    //self invoked function that
+    (async function() {
+      const { valid, data } = await checkStoredToken();
+      if (valid) {
+        dispatch({ type: "USER_DATA", payload: data });
+        history.push("/");
+      } else setCheckToken(false);
+    })();
+  }, []);
+
   return (
     <div className={classes.registerPage}>
-      <GridContainer justify="center">
-        <GridItem xs={12} sm={12} md={8}>
-          <Card>
-            <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Create an Account</h4>
-              <p className={classes.cardCategoryWhite}>
-                Fill Up Your Details Below
-              </p>
-            </CardHeader>
-            <form onSubmit={(e) => submitHandler(e)}>
-              <CardBody>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={5}>
-                    <CustomInput
-                      labelText="Company (disabled)"
-                      id="company-disabled"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        disabled: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={3}>
-                    <CustomInput
-                      labelText="Username"
-                      id="username"
-                      onChange={() => console.log("hello")}
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        onChange: (e) => setUsername(e.target.value),
-                        required: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={4}>
-                    <CustomInput
-                      labelText="Email address"
-                      id="email-address"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        onChange: (e) => setEmail(e.target.value),
-                        type: "email",
-                        required: true,
-                      }}
-                    />
-                  </GridItem>
-                </GridContainer>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={4}>
-                    <CustomInput
-                      labelText="First Name"
-                      id="first-name"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        onChange: (e) => setFirstName(e.target.value),
-                        required: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={4}>
-                    <CustomInput
-                      labelText="Last Name"
-                      id="last-name"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        onChange: (e) => setLastName(e.target.value),
-                        required: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={4}>
-                    <CustomInput
-                      labelText="Create Password"
-                      id="password"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        type: "password",
-                        onChange: (e) => setPassword(e.target.value),
-                        required: true,
-                      }}
-                    />
-                  </GridItem>
-                </GridContainer>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={4}>
-                    <CustomInput
-                      labelText="City"
-                      id="city"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        onChange: (e) => setCity(e.target.value),
-                        required: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={4}>
-                    <CustomInput
-                      labelText="Country"
-                      id="country"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        onChange: (e) => setCountry(e.target.value),
-                        required: true,
-                      }}
-                    />
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={4}>
-                    <CustomInput
-                      labelText="Postal Code"
-                      id="postal-code"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        onChange: (e) => setPostalCode(e.target.value),
-                        required: true,
-                      }}
-                    />
-                  </GridItem>
-                </GridContainer>
-                <GridContainer>
-                  <GridItem xs={12} sm={12} md={12}>
-                    <InputLabel style={{ color: "#AAAAAA" }}>
-                      About me
-                    </InputLabel>
-                    <CustomInput
-                      labelText="Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo."
-                      id="about-me"
-                      formControlProps={{
-                        fullWidth: true,
-                      }}
-                      inputProps={{
-                        multiline: true,
-                        rows: 5,
-                        onChange: (e) => setAbout(e.target.value),
-                      }}
-                    />
-                  </GridItem>
-                </GridContainer>
-              </CardBody>
-              <CardFooter>
-                <Button color="primary" type="submit">
-                  Register
-                </Button>
-              </CardFooter>
-            </form>
-            <h4 className={classes.loginAsk}>
-              Have an account?
-              <span className={classes.loginLink}>
-                <Link to="/login"> Login</Link>
-              </span>
-            </h4>
-          </Card>
-        </GridItem>
-      </GridContainer>
+      {checkingToken ? (
+        <img src="loading.gif" className={classes.loadingGif} />
+      ) : (
+        <GridContainer justify="center">
+          <GridItem xs={12} sm={12} md={8}>
+            <Card>
+              <CardHeader color="primary">
+                <h4 className={classes.cardTitleWhite}>Create an Account</h4>
+                <p className={classes.cardCategoryWhite}>
+                  Fill Up Your Details Below
+                </p>
+              </CardHeader>
+              <form onSubmit={(e) => submitHandler(e)}>
+                <CardBody>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={5}>
+                      <CustomInput
+                        labelText="Company (disabled)"
+                        id="company-disabled"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          disabled: true,
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={3}>
+                      <CustomInput
+                        labelText="Username"
+                        id="username"
+                        onChange={() => console.log("hello")}
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          onChange: (e) => setUsername(e.target.value),
+                          required: true,
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={4}>
+                      <CustomInput
+                        labelText="Email address"
+                        id="email-address"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          onChange: (e) => setEmail(e.target.value),
+                          type: "email",
+                          required: true,
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={4}>
+                      <CustomInput
+                        labelText="First Name"
+                        id="first-name"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          onChange: (e) => setFirstName(e.target.value),
+                          required: true,
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={4}>
+                      <CustomInput
+                        labelText="Last Name"
+                        id="last-name"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          onChange: (e) => setLastName(e.target.value),
+                          required: true,
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={4}>
+                      <CustomInput
+                        labelText="Create Password"
+                        id="password"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          type: "password",
+                          onChange: (e) => setPassword(e.target.value),
+                          required: true,
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={4}>
+                      <CustomInput
+                        labelText="City"
+                        id="city"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          onChange: (e) => setCity(e.target.value),
+                          required: true,
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={4}>
+                      <CustomInput
+                        labelText="Country"
+                        id="country"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          onChange: (e) => setCountry(e.target.value),
+                          required: true,
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem xs={12} sm={12} md={4}>
+                      <CustomInput
+                        labelText="Postal Code"
+                        id="postal-code"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          onChange: (e) => setPostalCode(e.target.value),
+                          required: true,
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={12}>
+                      <InputLabel style={{ color: "#AAAAAA" }}>
+                        About me
+                      </InputLabel>
+                      <CustomInput
+                        labelText="Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo."
+                        id="about-me"
+                        formControlProps={{
+                          fullWidth: true,
+                        }}
+                        inputProps={{
+                          multiline: true,
+                          rows: 5,
+                          onChange: (e) => setAbout(e.target.value),
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                </CardBody>
+                <CardFooter>
+                  <Button color="primary" type="submit">
+                    Register
+                  </Button>
+                </CardFooter>
+              </form>
+              <h4 className={classes.loginAsk}>
+                Have an account?
+                <span className={classes.loginLink}>
+                  <Link to="/login"> Login</Link>
+                </span>
+              </h4>
+            </Card>
+          </GridItem>
+        </GridContainer>
+      )}
     </div>
   );
 };

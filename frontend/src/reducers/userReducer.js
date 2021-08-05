@@ -1,14 +1,4 @@
-const initialState = {
-  username: "",
-  firstName: "",
-  lastName: "",
-  email: "",
-  password: "",
-  city: "",
-  country: "",
-  postalCode: "",
-  about: "",
-};
+const initialState = null;
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case "USER_DATA":
