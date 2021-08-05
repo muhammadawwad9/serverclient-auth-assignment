@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useHistory } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 // @material-ui/core components
@@ -47,8 +48,7 @@ const styles = {
 };
 
 const useStyles = makeStyles(styles);
-
-const Login = () => {
+const Login = ({ history }) => {
   const classes = useStyles();
 
   const [userInfo, setUserInfo] = useState({});
@@ -73,12 +73,11 @@ const Login = () => {
         return toast.error(parsedResponse.err, {
           position: toast.POSITION.BOTTOM_CENTER,
         });
-      toast.success(parsedResponse.msg, {
-        position: toast.POSITION.BOTTOM_CENTER,
-      });
       const { token } = parsedResponse;
       localStorage.setItem("token", token);
       dispatch({ type: "USER_DATA", payload: parsedResponse.data });
+      toast.success(parsedResponse.msg);
+      history.push("/");
     } catch (err) {
       toast.error(err, {
         position: toast.POSITION.BOTTOM_CENTER,

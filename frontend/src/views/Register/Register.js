@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 // @material-ui/core components
@@ -48,7 +48,7 @@ const styles = {
 
 const useStyles = makeStyles(styles);
 
-const Register = () => {
+const Register = ({ history }) => {
   const classes = useStyles();
   const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -101,9 +101,8 @@ const Register = () => {
       const { token } = parsedResponse;
       localStorage.setItem("token", token);
       dispatch({ type: "USER_DATA", payload: parsedResponse.data });
-      toast.success(parsedResponse.msg, {
-        position: toast.POSITION.BOTTOM_CENTER,
-      });
+      history.push("/");
+      toast.success(parsedResponse.msg);
     } catch (err) {
       return toast.error(err, {
         position: toast.POSITION.BOTTOM_CENTER,
