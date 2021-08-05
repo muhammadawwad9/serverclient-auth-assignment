@@ -7,7 +7,7 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 //functions imports from utils
-const { tokenGenerator } = require("../utils");
+const { tokenGenerator, checkTokenValidity } = require("../utils");
 
 router.post("/register", async (req, res) => {
   try {
@@ -58,6 +58,21 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     console.log("ERROR: ", err);
+  }
+});
+
+router.post("/check-token", async (req, res) => {
+  try {
+    const { tokenToCheck } = req.body;
+    const response = await checkTokenValidity(tokenToCheck);
+    const { valid, data } = response;
+    console.log("VALID: ", valid);
+    console.log("data: ", data);
+
+    if (valid) return res.json({ valid, data });
+    return res.status(401).json({ valid });
+  } catch (err) {
+    console.log("ERRPR: ", err);
   }
 });
 
