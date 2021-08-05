@@ -52,7 +52,7 @@ router.post("/login", async (req, res) => {
     foundUsername.password = undefined;
     const token = tokenGenerator({ id });
     return res.json({
-      msg: `Welcome ${foundUsername.firstName}`,
+      msg: `Welcome Back ${foundUsername.firstName}`,
       token,
       data: foundUsername,
     });
