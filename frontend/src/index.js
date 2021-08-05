@@ -34,6 +34,7 @@ import "assets/css/material-dashboard-react.css?v=1.8.0";
 
 //views imports
 import Login from "views/Login/Login";
+import Register from "views/Register/Register";
 
 const hist = createBrowserHistory();
 toast.configure();
@@ -50,6 +51,7 @@ ReactDOM.render(
         <Route path="/admin" component={Admin} />
         <Route path="/rtl" component={RTL} />
         <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
         <Redirect from="/" to="/admin/dashboard" />
       </Switch>
     </Router>

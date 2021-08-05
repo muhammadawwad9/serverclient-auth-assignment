@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useHistory } from "react-router-dom";
+import React, { useState, useEffect, useHistory } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 // @material-ui/core components
@@ -52,7 +52,6 @@ const Login = () => {
   const classes = useStyles();
 
   const [userInfo, setUserInfo] = useState({});
-
   const dispatch = useDispatch();
 
   /*changeHandler, when the username or password input changes I will set the userInfo state which is the object to send to the server*/
@@ -74,7 +73,7 @@ const Login = () => {
         return toast.error(parsedResponse.err, {
           position: toast.POSITION.BOTTOM_CENTER,
         });
-      toast.success("Welcome", {
+      toast.success(parsedResponse.msg, {
         position: toast.POSITION.BOTTOM_CENTER,
       });
       const { token } = parsedResponse;
@@ -94,7 +93,7 @@ const Login = () => {
   return (
     <div className={classes.loginPage}>
       <GridContainer justify="center">
-        <GridItem xs={12} sm={9} md={6}>
+        <GridItem xs={12} sm={9} md={5}>
           <Card>
             <CardHeader color="primary">
               <h4 className={classes.cardTitleWhite}>Login</h4>
@@ -108,21 +107,22 @@ const Login = () => {
             >
               <CardBody>
                 <GridContainer>
-                  <GridItem xs={12} sm={12} md={7}>
+                  <GridItem xs={12} sm={12} md={8}>
                     <CustomInput
                       labelText="Username"
                       id="username"
-                      inputProps={{
-                        onChange: (e) => changeHandler(e),
-                      }}
                       formControlProps={{
                         fullWidth: true,
+                      }}
+                      inputProps={{
+                        onChange: (e) => changeHandler(e),
+                        required: true,
                       }}
                     />
                   </GridItem>
                 </GridContainer>
                 <GridContainer>
-                  <GridItem xs={12} sm={12} md={7}>
+                  <GridItem xs={12} sm={12} md={8}>
                     <CustomInput
                       labelText="Password"
                       id="password"
@@ -132,6 +132,7 @@ const Login = () => {
                       inputProps={{
                         type: "password",
                         onChange: (e) => changeHandler(e),
+                        required: true,
                       }}
                     />
                   </GridItem>
