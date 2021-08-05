@@ -66,8 +66,6 @@ router.post("/check-token", async (req, res) => {
     const { tokenToCheck } = req.body;
     const response = await checkTokenValidity(tokenToCheck);
     const { valid, data } = response;
-    console.log("VALID: ", valid);
-    console.log("data: ", data);
 
     if (valid) return res.json({ valid, data });
     return res.status(401).json({ valid });
