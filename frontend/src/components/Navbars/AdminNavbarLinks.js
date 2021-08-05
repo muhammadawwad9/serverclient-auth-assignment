@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import classNames from "classnames";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
@@ -29,6 +30,7 @@ export default function AdminNavbarLinks() {
   const [openNotification, setOpenNotification] = React.useState(null);
   const [openProfile, setOpenProfile] = React.useState(null);
 
+  const dispatch = useDispatch();
   const handleClickNotification = (event) => {
     if (openNotification && openNotification.contains(event.target)) {
       setOpenNotification(null);
@@ -210,7 +212,10 @@ export default function AdminNavbarLinks() {
                     <Divider light />
                     <Link
                       to="/login"
-                      onClick={() => localStorage.removeItem("token")}
+                      onClick={() => {
+                        localStorage.removeItem("token");
+                        dispatch({ type: "CLEAR" });
+                      }}
                     >
                       <MenuItem
                         onClick={handleCloseProfile}

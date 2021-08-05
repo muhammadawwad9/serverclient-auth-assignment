@@ -126,10 +126,7 @@ const Login = ({ history }) => {
       if (valid) {
         dispatch({ type: "USER_DATA", payload: data });
         history.push("/");
-      } else {
-        dispatch({ type: "CLEAR" });
-        setCheckingToken(false);
-      }
+      } else setCheckingToken(false);
     })();
   }, []);
 
