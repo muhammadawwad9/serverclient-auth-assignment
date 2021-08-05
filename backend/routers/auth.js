@@ -13,6 +13,13 @@ router.post("/register", async (req, res) => {
   try {
     let { password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 12);
+    /*now I want to check if the user exists, ethier the email or username, I searched for how can I put two conditions in find(), so my life will be easier :)*/
+
+    const userExists = await User.find({
+      $or: [{ username: req.body.username }, { email: req.body.email }],
+    });
+    if (userExists.length > 0)
+      return res.status(403).json({ err: "user already exists" });
     const user = new User({ ...req.body, password: hashedPassword });
     const savedUser = await user.save();
     //I won't send the password to the client side with the data
