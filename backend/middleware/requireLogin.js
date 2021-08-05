@@ -19,7 +19,7 @@ const requireLogin = async (req, res, next) => {
       req.userId = foundUser._id;
       next();
     } catch (err) {
-      console.log(err);
+      res.status(503).json({ err });
     }
   });
 };

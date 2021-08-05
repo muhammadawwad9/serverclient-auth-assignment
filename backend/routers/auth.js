@@ -33,7 +33,7 @@ router.post("/register", async (req, res) => {
       data: savedUser,
     });
   } catch (err) {
-    console.log("ERROR: ", err);
+    res.status(503).json({ err });
   }
 });
 
@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
       data: foundUsername,
     });
   } catch (err) {
-    console.log("ERROR: ", err);
+    res.status(503).json({ err });
   }
 });
 
