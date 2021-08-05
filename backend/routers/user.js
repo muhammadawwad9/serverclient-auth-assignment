@@ -14,7 +14,7 @@ router.put("/update-profile", requireLogin, async (req, res) => {
       new: true,
     });
     updatedUser.password = undefined;
-    return res.json({ msg: " info updated successfully", updatedUser });
+    return res.json({ msg: " Info Updated Successfully", updatedUser });
   } catch (err) {
     console.log("ERROR: ", err);
   }
