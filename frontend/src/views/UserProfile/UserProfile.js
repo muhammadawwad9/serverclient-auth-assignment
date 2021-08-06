@@ -81,14 +81,17 @@ export default function UserProfile() {
 
     dispatch({ type: "LOADING", payload: true });
     try {
-      const response = await fetch("http://localhost:4000/update-profile", {
-        method: "put",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(defaultFields),
-      });
+      const response = await fetch(
+        "https://serverclient-auth-assignment.herokuapp.com/update-profile",
+        {
+          method: "put",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(defaultFields),
+        }
+      );
       const parsedResponse = await response.json();
       dispatch({ type: "LOADING", payload: false });
 

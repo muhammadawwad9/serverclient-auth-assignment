@@ -83,11 +83,14 @@ const Login = ({ history }) => {
     setServerWait(true);
     setToastFinished(false);
     try {
-      const response = await fetch("http://localhost:4000/login", {
-        method: "post",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userInfo),
-      });
+      const response = await fetch(
+        "https://serverclient-auth-assignment.herokuapp.com/login",
+        {
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userInfo),
+        }
+      );
       const parsedResponse = await response.json();
       setServerWait(false);
 

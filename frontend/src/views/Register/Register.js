@@ -106,11 +106,14 @@ const Register = ({ history }) => {
       userInfo.city = capitalizeStr(userInfo.city);
       userInfo.country = capitalizeStr(userInfo.country);
 
-      const response = await fetch("http://localhost:4000/register", {
-        method: "post",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userInfo),
-      });
+      const response = await fetch(
+        "https://serverclient-auth-assignment.herokuapp.com/register",
+        {
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userInfo),
+        }
+      );
       const parsedResponse = await response.json();
       setServerWait(false);
       if (parsedResponse.err) {
