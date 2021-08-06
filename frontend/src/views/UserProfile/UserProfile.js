@@ -99,7 +99,7 @@ export default function UserProfile() {
         toast.success(parsedResponse.msg);
         setTimeout(() => setToastFinished(true), 3500);
       } else {
-        toast.error("Something Went Wrong!", {
+        toast.error(parsedResponse.err, {
           position: toast.POSITION.BOTTOM_CENTER,
         });
         setTimeout(() => setToastFinished(true), 3500);
