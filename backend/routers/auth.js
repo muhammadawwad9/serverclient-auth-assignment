@@ -20,7 +20,11 @@ router.post("/register", async (req, res) => {
     });
     if (userExists.length > 0)
       return res.status(403).json({ err: "User Already Exists" });
-    const user = new User({ ...req.body, password: hashedPassword });
+    const user = new User({
+      ...req.body,
+      username: req.body.username.toLowerCase(),
+      password: hashedPassword,
+    });
     const savedUser = await user.save();
     //I won't send the password to the client side with the data
     savedUser.password = undefined;
@@ -42,6 +46,7 @@ router.post("/login", async (req, res) => {
     let { username, password } = req.body;
     if (!username.trim() || !password)
       return res.status(400).json({ err: "missing fields" });
+    username = username.toLowerCase();
     const foundUsername = await User.findOne({ username });
     if (!foundUsername)
       return res.status(401).json({ err: "Wrong Username or Password" }); //I say that something wrong(without specifications) for more security :)
