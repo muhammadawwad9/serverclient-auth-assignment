@@ -16,7 +16,10 @@ router.post("/register", async (req, res) => {
     /*now I want to check if the user exists, ethier the email or username, I searched for how can I put two conditions in find(), so my life will be easier :)*/
 
     const userExists = await User.find({
-      $or: [{ username: req.body.username }, { email: req.body.email }],
+      $or: [
+        { username: req.body.username.toLowerCase() },
+        { email: req.body.email },
+      ],
     });
     if (userExists.length > 0)
       return res.status(403).json({ err: "User Already Exists" });
